@@ -1,0 +1,14 @@
+torch_summary
+wandb
+addict
+
+clean-text==0.6.0
+iterative-stratification==0.1.7
+transformers
+tokenizers
+addict
+transformers[sentencepiece]
+joblib==1.1.0
+swifter
+optuna
+Unidecode
