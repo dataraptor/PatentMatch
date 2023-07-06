@@ -6,7 +6,6 @@ Copyright: Shamim Ahamed
 from torch import nn
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 import torch
-from addict import Dict
 
 class MeanPooling(nn.Module):
     def __init__(self):
@@ -20,12 +19,11 @@ class MeanPooling(nn.Module):
         mean_embeddings = sum_embeddings / sum_mask
         return mean_embeddings
 
-
 class MeanPoolingLayer(nn.Module):
-    def __init__(self):
+    def __init__(self, input_size, target_size):
         super(MeanPoolingLayer, self).__init__()
         self.pool = MeanPooling()
-        self.fc = nn.Linear(768, 6)
+        self.fc = nn.Linear(input_size, target_size)
         
     def forward(self, inputs, mask):
         last_hidden_states = inputs[0]
@@ -48,17 +46,19 @@ def weight_init_normal(module, model):
         module.weight.data.fill_(1.0)
         
 
-class FB3Model(nn.Module):
+class USPPPMModel(nn.Module):
     def __init__(self, backbone):
-        super(FB3Model, self).__init__()
+        super(USPPPMModel, self).__init__()
         self.config = AutoConfig.from_pretrained(backbone, output_hidden_states=True)
-        self.config.hidden_dropout = 0.
-        self.config.hidden_dropout_prob = 0.
-        self.config.attention_dropout = 0.
-        self.config.attention_probs_dropout_prob = 0.
         self.model = AutoModel.from_pretrained(backbone, config=self.config)
-        self.head = MeanPoolingLayer()
+        self.head = MeanPoolingLayer(768,1)
         self.tokenizer = AutoTokenizer.from_pretrained(backbone);
+        
+        #sectoks = ['[CTG]', '[CTX]', '[ANC]', '[TGT]']
+        #self.tokenizer.add_special_tokens({'additional_special_tokens': sectoks})
+        #self.model.resize_token_embeddings(len(self.tokenizer))
+        
+        
         
     def _init_weights(self, layer):
         for module in layer.modules():
@@ -72,5 +72,12 @@ class FB3Model(nn.Module):
         return outputs
 
 if __name__ == '__main__':
-    model = FB3Model('microsoft/deberta-v3-base')
+    model = USPPPMModel('microsoft/deberta-v3-base')
+    
+    
+    
+    
+    
+    
+    
     
