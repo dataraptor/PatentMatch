@@ -76,7 +76,7 @@ if __name__ == '__main__':
         
     wandb.login()
     run = wandb.init(
-        project='WriteAssist',
+        project='PatentMatch',
         name=args.name,
         config = {
             'backbone': CFG.backbone,
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     )
     
     
-    loss_fn = nn.SmoothL1Loss(reduction='mean')
+    loss_fn = nn.BCEWithLogitsLoss(reduction="mean")
     #loss_fn = nn.CrossEntropyLoss()
     no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
     optimizer_parameters = [

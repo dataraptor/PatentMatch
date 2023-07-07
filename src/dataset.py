@@ -43,7 +43,7 @@ class USPPPMDataset(Dataset):
         return df
 
 
-    def __len__(self): return len(self.texts)
+    def __len__(self): return len(self.df)
     
     def __getitem__(self, idx):
         x = self.df.iloc[idx]
