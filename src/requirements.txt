@@ -2,6 +2,7 @@ torch_summary
 wandb
 addict
 
+scipy
 clean-text==0.6.0
 iterative-stratification==0.1.7
 transformers

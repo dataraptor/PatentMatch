@@ -11,7 +11,6 @@ class CFG:
     learning_rate = 2.0e-5
     train_last_nlayer = 0
     weight_decay = 0.01
-    hidden_size = 256
     
     num_workers = len(os.sched_getaffinity(0))
 
