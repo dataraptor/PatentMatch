@@ -1,8 +1,8 @@
 from config import CFG
 from torch import nn, optim
 from torch.utils.data import DataLoader
-from model import FB3Model
-from dataset import FB3Dataset
+from model import USPPPMModel
+from dataset import USPPPMDataset
 from utils import AverageMeter
 import os, argparse
 import torch, wandb
@@ -10,6 +10,7 @@ from tqdm import tqdm
 from addict import Dict
 from sklearn.metrics import mean_squared_error
 import numpy as np
+import scipy as sp
 
 def make_parser():
     parser = argparse.ArgumentParser()
@@ -28,16 +29,9 @@ def make_parser():
     return parser
 
 
-def MCRMSE(y_preds, y_trues):
-    scores = []
-    idxes = y_trues.shape[1]
-    for i in range(idxes):
-        y_true = y_trues[:,i]
-        y_pred = y_preds[:,i]
-        score = mean_squared_error(y_true, y_pred, squared=False) # RMSE
-        scores.append(score)
-    mcrmse_score = np.mean(scores)
-    return mcrmse_score, scores
+def get_score(y_true, y_pred):
+    score = sp.stats.pearsonr(y_true, y_pred)[0]
+    return score
 
 
 def train(data, model, optimizer, loss_fn, scaler):
@@ -52,7 +46,7 @@ def train(data, model, optimizer, loss_fn, scaler):
     scaler.update()
     
     #preds = outputs.argmax(-1)
-    score = MCRMSE(outputs.detach().cpu().numpy(), targets.detach().cpu().numpy())[0]
+    score = get_score(targets.detach().cpu().numpy(), outputs.detach().cpu().numpy())
     return loss, score
 
 
@@ -64,7 +58,7 @@ def validate(data, model, loss_fn):
     loss = loss_fn(outputs, targets)
     
     #preds = outputs.argmax(-1)
-    score = MCRMSE(outputs.detach().cpu().numpy(), targets.detach().cpu().numpy())[0]
+    score = get_score(targets.detach().cpu().numpy(), outputs.detach().cpu().numpy())
     return loss, score, outputs.to('cpu').numpy(), targets.to('cpu').numpy()
 
 
@@ -95,19 +89,10 @@ if __name__ == '__main__':
         anonymous=None
     )
     
-    model = FB3Model(CFG.backbone).to(device)
-    cfg_ds = {
-        'nfold': 4,
-        'seed': -1,
-        'batch_size': args.batch_size,
-        'drop_last_batch': True,
-        'max_length': 768, 
-    }
-    data = FB3Dataset.read_data('./Data', 4, Dict(cfg_ds), 42)
+    model = USPPPMModel(CFG.backbone).to(device)
     
-    fold = 0
-    train_dataset = FB3Dataset(data, 'train', Dict(cfg_ds), model, fold, 42, limit)
-    valid_dataset = FB3Dataset(data, 'valid', Dict(cfg_ds), model, fold, 42, limit)
+    train_dataset = USPPPMDataset('./Data/USPPPM 4Fold/fold-0-train.csv', model.tokenizer, 133, limit)
+    valid_dataset = USPPPMDataset('./Data/USPPPM 4Fold/fold-0-test.csv', model.tokenizer, 133, limit)
     
     train_dl = DataLoader(
         train_dataset, batch_size = args.batch_size,

@@ -54,9 +54,9 @@ class USPPPMModel(nn.Module):
         self.head = MeanPoolingLayer(768,1)
         self.tokenizer = AutoTokenizer.from_pretrained(backbone);
         
-        #sectoks = ['[CTG]', '[CTX]', '[ANC]', '[TGT]']
-        #self.tokenizer.add_special_tokens({'additional_special_tokens': sectoks})
-        #self.model.resize_token_embeddings(len(self.tokenizer))
+        # sectoks = ['[CTG]', '[CTX]', '[ANC]', '[TGT]']
+        # self.tokenizer.add_special_tokens({'additional_special_tokens': sectoks})
+        # self.model.resize_token_embeddings(len(self.tokenizer))
         
         
         

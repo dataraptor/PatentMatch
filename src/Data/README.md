@@ -3,15 +3,14 @@
 
 
 # Download Dataset
-https://www.kaggle.com/competitions/us-patent-phrase-to-phrase-matching/
-
+https://www.kaggle.com/datasets/sahamed/usppm-4-fold-with-title
 
 ## Structure
 
 ```
 ├── Data
-│   ├── train.csv
-│   ├── test.csv
+│   ├── USPPPM 4Fold/fold-0-test.csv
+│   ├── USPPPM 4Fold/fold-0-train.csv
 ```
 
 
