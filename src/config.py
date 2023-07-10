@@ -13,4 +13,3 @@ class CFG:
     weight_decay = 0.01
     
     num_workers = len(os.sched_getaffinity(0))
-
